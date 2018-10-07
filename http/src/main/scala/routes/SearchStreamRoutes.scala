@@ -10,6 +10,7 @@ import akka.stream.scaladsl.{Flow, Source}
 import akka.stream.{ActorMaterializer, ThrottleMode}
 import akka.util.ByteString
 import com.eztier.postgres.eventstore.models.Patient
+import com.eztier.postgres.async.CommandRunner
 import com.eztier.rest.responses.SearchPatientJsonProtocol._
 
 import scala.concurrent.ExecutionContext
@@ -21,6 +22,7 @@ trait SearchStreamRoutes {
   implicit val executionContext: ExecutionContext
   lazy val httpStreamingRoutes = streamingJsonRoute
   lazy val httpInfoStreamingRoutes = streamingInfoRoute
+  lazy val httpStreamingSearchRoutes = streamingSearchRoute
 
   implicit val jsonStreamingSupport: akka.http.scaladsl.common.JsonEntityStreamingSupport = EntityStreamingSupport.json()
   
@@ -52,6 +54,31 @@ trait SearchStreamRoutes {
 
         complete(sourceOfSearchMessages)
       }
+    }
+    
+  def searchEventstore(term: String) = Flow[Patient].map {
+    s =>
+      CommandRunner.search(term)
+  }
+    
+  /*
+    @test
+      curl -XPOST -H 'Content-Type:application/json'  -d '{"name": "abc"}' localhost:9000/search
+  */
+  def streamingSearchRoute =
+    path("search") {
+      post {
+        entity(as[Patient]) { p =>
+
+          val resp = Source.single(p)
+            .via(searchEventstore(p.name))
+            .throttle(elements = 100, per = 1 second, maximumBurst = 1, mode = ThrottleMode.Shaping)
+
+          // complete(HttpEntity(`text/plain(UTF-8)`, resp))
+          complete(resp)
+        }
+      }
+
     }
 
 }

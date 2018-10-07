@@ -16,7 +16,7 @@ class TestQuillSpec extends FunSpec with Matchers {
 
   val runner = CommandRunner()
 
-  val f = runner.read("a")
+  val f = runner.read2("a")
 
   val r = Await.result(f, 500 millis)
 

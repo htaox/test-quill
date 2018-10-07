@@ -11,7 +11,7 @@ object Boot extends App with SearchStreamRoutes {
   implicit val streamMaterializer = ActorMaterializer()
   implicit val executionContext = actorSystem.dispatcher
   implicit val logger = actorSystem.log
-  val allRoutes = httpStreamingRoutes ~ httpInfoStreamingRoutes
+  val allRoutes = httpStreamingRoutes ~ httpInfoStreamingRoutes ~ httpStreamingSearchRoutes
 
   val bindingFuture = Http().bindAndHandle(allRoutes, "localhost", 9000)
   bindingFuture
