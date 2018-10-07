@@ -104,7 +104,8 @@ lazy val http = project.
       akkaHttpTestkit
     )
   ).dependsOn(
-    common
+    common,
+    database
   )
   
 lazy val assemblySettings = Seq(
