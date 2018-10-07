@@ -38,6 +38,10 @@ trait SearchStreamRoutes {
       }
     }
 
+  /*
+    @test
+      for i in {1..10000}; do curl localhost:9000/streaming-json & done
+  */
   def streamingJsonRoute =
     path("streaming-json") {
       get {
