@@ -14,9 +14,9 @@ class TestQuillSpec extends FunSpec with Matchers {
   implicit val materializer = ActorMaterializer()
 
 
-  val runner = CommandRunner()
+  // val runner = CommandRunner()
 
-  val f = runner.read2("a")
+  val f = CommandRunner.read2("a")
 
   val r = Await.result(f, 500 millis)
 
